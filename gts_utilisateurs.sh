@@ -4,12 +4,14 @@
 
 
 read -p "Quelle action effectuer ? (create_user, delete_user, create_group) : " action
-read -p "Quel est le nom de l'utilisateur ? : " USER
 
 #generation d'un mdp akeatoire  pour l'utilisateur
 
 
 create_user() {
+
+    
+
     # Vérification si l'utilisateur existe déjà
     if id "$1" &>/dev/null; then
         echo "L'utilisateur $1 existe déjà"
@@ -55,6 +57,7 @@ create_user() {
 delete_user()
 
 {
+    read -p "Quel est le nom de l'utilisateur ? : " USER
 
     #for group in $(groups $1 | cut -d: -f2); do
     #   sudo gpasswd -d "$1" "$group"
@@ -76,6 +79,8 @@ delete_user()
 #creation d'un groupe
 create_group()
 {
+    
+
     echo "Création du groupe : $1"
     # On vérifie si le groupe existe
     if grep -q "^$1:" /etc/group; then
@@ -90,12 +95,15 @@ create_group()
 
 case $action in
     create_user)
+        read -p "Quel est le nom de l'utilisateur ? : " USER
         create_user "$USER"
         ;;
     delete_user)
+        read -p "Quel est le nom de l'utilisateur ? : " USER
         delete_user "$USER"
         ;;
     create_group)
+        read -p "Quel est le nom du groupe ? : " GROUP
         create_group "$GROUP"
         ;;
     *)
