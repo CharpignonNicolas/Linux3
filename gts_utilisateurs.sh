@@ -16,6 +16,9 @@ create_user()
         # On crée l'utilisateur
         sudo useradd -m -s /bin/bash "$1"
         echo "L'utilisateur $1 a été créé"
+        # On définit le mot de passe de l'utilisateur
+        sudo passwd 
+
     fi
 }
 
