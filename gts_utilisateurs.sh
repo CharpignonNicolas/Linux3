@@ -3,7 +3,7 @@
 # Fonction qui permet de créer un utilisateur
 
 
-read -p "Quelle action effectuer ? (create_user, delete_user, create_group) : " action
+read -p "Quelle action effectuer ? (create_user = 1, delete_user = 2, create_group = 3, add_user_to_group = 4 ) : " action
 
 #generation d'un mdp akeatoire  pour l'utilisateur
 
@@ -92,19 +92,43 @@ create_group()
     fi
 }
 
+#ajout d'un utilisateur à un groupe
+add_user_to_group()
+{
+
+    # Lister les groupes existants
+            echo "Groupes existants :"
+            liste_groupes=$(cut -d: -f1 /etc/group | tr '\n' ' ')
+            echo "$liste_groupes"
+            
+            # Demander les groupes
+            read -p "Entrez les groupes séparés par un espace : " groupes
+
+            # Ajouter l'utilisateur aux groupes avec gpasswd
+            for group in $groupes; do
+                sudo gpasswd -a "$1" "$group"
+                #echo "L'utilisateur $1 a été ajouté au groupe $group"
+            done
+}
+
+
 
 case $action in
-    create_user)
+    1)
         read -p "Quel est le nom de l'utilisateur ? : " USER
         create_user "$USER"
         ;;
-    delete_user)
+    2)
         read -p "Quel est le nom de l'utilisateur ? : " USER
         delete_user "$USER"
         ;;
-    create_group)
+    3)
         read -p "Quel est le nom du groupe ? : " GROUP
         create_group "$GROUP"
+        ;;
+    4)
+        read -p "Quel est le nom du l'utilisateur ? : " USER
+        add_user_to_group "$USER"
         ;;
     *)
         echo "Action inconnue"
