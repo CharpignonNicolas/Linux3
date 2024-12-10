@@ -13,11 +13,12 @@ disk()
     df -h
 }
 
-# Suivi des processus actifs
+# Suivi des processus actifs trie de sorte ( Utilisateur , nombre de processus , %cpu , %mem )
 process()
 {
-    ps -aux
+    ps -eo user=|sort|uniq -c|sort -nr
 }
+
 # Surveillance de l’utilisation de la mémoire
 memory()
 {
