@@ -14,12 +14,12 @@ NEW_PARTITION=$(fdisk -l | grep "$PARTITION" | awk '{print $1}')
 apt -y install quota quotatool
 
 #Enable Quota feature
-df -h /home
+df -h REP_QUOTAS
 
 echo $NEW_PARTITION
 # set quota feature and re-mount
 
-umount /home
+umount REP_QUOTAS
 tune2fs -O quota $NEW_PARTITION
 mount $NEW_PARTITION $REP_QUOTAS
 tune2fs -l $NEW_PARTITION | grep -i quota
