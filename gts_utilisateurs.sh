@@ -32,6 +32,19 @@ create_user() {
 
         echo "L'utilisateur $1 a maintenant un mot de passe aléatoire."
 
+        # Demander à l'utilisateur quel quota en mégaoctets il souhaite définir
+        echo "Quel quota en mégaoctets voulez-vous attribuer à l'utilisateur $1 ?"
+        read quota_mb
+
+        # Convertir le quota de Mo en Ko (1 Mo = 1024 Ko)
+        quota_ko=$((quota_mb * 1024))
+
+        # Appliquer le quota à l'utilisateur sur la partition /home
+        sudo setquota -u $1 $quota_ko 0 0 0 /home
+
+        # Afficher un message de confirmation
+        echo "Le quota de $quota_mb Mo a été défini pour l'utilisateur $1 sur la partition /home."
+
         # Affecter l'utilisateur à un ou plusieurs groupes
         read -p "Souhaitez-vous affecter l'utilisateur $1 à un ou plusieurs groupes ? (y/n) : " response
         if [ "$response" == "y" ]; then
