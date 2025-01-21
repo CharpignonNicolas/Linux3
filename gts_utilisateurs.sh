@@ -1,149 +1,137 @@
 #!/bin/bash
 
-# Afficher le menu principal
-show_menu() {
-    clear
-    echo "==============================="
-    echo "       GESTION UTILISATEURS"
-    echo "==============================="
-    echo "1. Créer un utilisateur"
-    echo "2. Supprimer un utilisateur"
-    echo "3. Créer un groupe"
-    echo "4. Ajouter un utilisateur à un groupe"
-    echo "5. Lister les utilisateurs et leurs détails"
-    echo "0. Quitter"
-    echo "==============================="
-    read -p "Entrez votre choix : " action
-}
+# Fonction qui permet de créer un utilisateur
 
-# Fonction pour créer un utilisateur
+
+read -p "Quelle action effectuer ? (create_user = 1, delete_user = 2, create_group = 3, add_user_to_group = 4 ) : " action
+
+#generation d'un mdp akeatoire  pour l'utilisateur
+
+
 create_user() {
-    read -p "Quel est le nom de l'utilisateur ? : " USER
-    if id "$USER" &>/dev/null; then
-        echo "L'utilisateur $USER existe déjà"
+
+    
+
+    # Vérification si l'utilisateur existe déjà
+    if id "$1" &>/dev/null; then
+        echo "L'utilisateur $1 existe déjà"
     else
-        sudo useradd -m -s /bin/bash "$USER"
-        echo "L'utilisateur $USER a été créé"
+        # Création de l'utilisateur
+        sudo useradd -m -s /bin/bash "$1"
+        echo "L'utilisateur $1 a été créé"
+
+        # Génération du mot de passe aléatoire
         password=$(openssl rand -base64 6)
         echo "Mot de passe généré : $password"
-        echo "$USER:$password" | sudo chpasswd
-        sudo passwd -e "$USER"
-        echo "L'utilisateur $USER a maintenant un mot de passe aléatoire."
 
-        read -p "Souhaitez-vous affecter l'utilisateur $USER à un ou plusieurs groupes ? (y/n) : " response
+        # Affectation du mot de passe à l'utilisateur
+        echo "$1:$password" | sudo chpasswd
+
+        # Forcer l'utilisateur à changer son mot de passe au prochain login
+        sudo passwd -e "$1"
+
+        echo "L'utilisateur $1 a maintenant un mot de passe aléatoire."
+
+        # Affecter l'utilisateur à un ou plusieurs groupes
+        read -p "Souhaitez-vous affecter l'utilisateur $1 à un ou plusieurs groupes ? (y/n) : " response
         if [ "$response" == "y" ]; then
+            # Lister les groupes existants
             echo "Groupes existants :"
             liste_groupes=$(cut -d: -f1 /etc/group | tr '\n' ' ')
             echo "$liste_groupes"
+            
+            # Demander les groupes
             read -p "Entrez les groupes séparés par un espace : " groupes
+
+            # Ajouter l'utilisateur aux groupes avec gpasswd
             for group in $groupes; do
-                sudo gpasswd -a "$USER" "$group"
+                sudo gpasswd -a "$1" "$group"
+                #echo "L'utilisateur $1 a été ajouté au groupe $group"
             done
         fi
     fi
 }
 
-# Fonction pour supprimer un utilisateur
-delete_user() {
+
+
+delete_user()
+
+{
     read -p "Quel est le nom de l'utilisateur ? : " USER
-    if id "$USER" &>/dev/null; then
-        sudo userdel -r "$USER"
-        echo "L'utilisateur $USER a été supprimé"
+
+    #for group in $(groups $1 | cut -d: -f2); do
+    #   sudo gpasswd -d "$1" "$group"
+    #  echo "L'utilisateur $1 a été supprimé du groupe $group"
+    #done
+
+    echo "Suppression de l'utilisateur : $1" 
+    # On vérifie si l'utilisateur existe
+    if id "$1" &>/dev/null; then
+        # On supprime l'utilisateur
+        sudo userdel -r "$1"
+        echo "L'utilisateur $1 a été supprimé"
     else
-        echo "L'utilisateur $USER n'existe pas"
+        echo "L'utilisateur $1 n'existe pas"
+    fi
+
+}
+
+#creation d'un groupe
+create_group()
+{
+    
+
+    echo "Création du groupe : $1"
+    # On vérifie si le groupe existe
+    if grep -q "^$1:" /etc/group; then
+        echo "Le groupe $1 existe déjà"
+    else
+        # On crée le groupe
+        sudo groupadd "$1"
+        echo "Le groupe $1 a été créé"
     fi
 }
 
-# Fonction pour créer un groupe
-create_group() {
-    read -p "Quel est le nom du groupe ? : " GROUP
-    if grep -q "^$GROUP:" /etc/group; then
-        echo "Le groupe $GROUP existe déjà"
-    else
-        sudo groupadd "$GROUP"
-        echo "Le groupe $GROUP a été créé"
-    fi
+#ajout d'un utilisateur à un groupe
+add_user_to_group()
+{
+
+    # Lister les groupes existants
+            echo "Groupes existants :"
+            liste_groupes=$(cut -d: -f1 /etc/group | tr '\n' ' ')
+            echo "$liste_groupes"
+            
+            # Demander les groupes
+            read -p "Entrez les groupes séparés par un espace : " groupes
+
+            # Ajouter l'utilisateur aux groupes avec gpasswd
+            for group in $groupes; do
+                sudo gpasswd -a "$1" "$group"
+                #echo "L'utilisateur $1 a été ajouté au groupe $group"
+            done
 }
 
-# Fonction pour ajouter un utilisateur à un groupe
-add_user_to_group() {
-    read -p "Quel est le nom de l'utilisateur ? : " USER
-    if id "$USER" &>/dev/null; then
-        echo "Groupes existants :"
-        liste_groupes=$(cut -d: -f1 /etc/group | tr '\n' ' ')
-        echo "$liste_groupes"
-        read -p "Entrez les groupes séparés par un espace : " groupes
-        for group in $groupes; do
-            sudo gpasswd -a "$USER" "$group"
-        done
-        echo "L'utilisateur $USER a été ajouté aux groupes spécifiés"
-    else
-        echo "L'utilisateur $USER n'existe pas"
-    fi
-}
 
-# Fonction pour lister les utilisateurs et leurs détails
-list_users() {
-    echo "Liste des utilisateurs :"
-    while IFS=: read -r username _ uid gid home shell; do
-        if [ "$uid" -ge 1000 ]; then
-            echo "Utilisateur : $username"
-            echo "  UID : $uid"
-            echo "  GID : $gid"
-            echo "  Dossier personnel : $home"
-            echo "  Shell : $shell"
 
-            groups=$(id -nG "$username")
-            echo "  Groupes : $groups"
-
-            if sudo -l -U "$username" &>/dev/null; then
-                echo "  Sudoer : Oui"
-            else
-                echo "  Sudoer : Non"
-            fi
-
-            quota=$(sudo repquota / | grep "^$username" | awk '{print $2 " fichiers, " $3 " blocs utilisés"}')
-            if [ -n "$quota" ]; then
-                echo "  Quotas : $quota"
-            else
-                echo "  Quotas : Non défini"
-            fi
-            echo "------------------------"
-        fi
-    done </etc/passwd
-}
-
-# Boucle principale
-while true; do
-    show_menu
-    case $action in
-        1)
-            create_user
-            read -p "Appuyez sur Entrée pour continuer..."
-            ;;
-        2)
-            delete_user
-            read -p "Appuyez sur Entrée pour continuer..."
-            ;;
-        3)
-            create_group
-            read -p "Appuyez sur Entrée pour continuer..."
-            ;;
-        4)
-            add_user_to_group
-            read -p "Appuyez sur Entrée pour continuer..."
-            ;;
-        5)
-            list_users
-            read -p "Appuyez sur Entrée pour continuer..."
-            ;;
-        0)
-            echo "Au revoir !"
-            exit 0
-            ;;
-        *)
-            echo "Choix invalide. Veuillez réessayer."
-            read -p "Appuyez sur Entrée pour continuer..."
-            ;;
-    esac
-done
+case $action in
+    1)
+        read -p "Quel est le nom de l'utilisateur ? : " USER
+        create_user "$USER"
+        ;;
+    2)
+        read -p "Quel est le nom de l'utilisateur ? : " USER
+        delete_user "$USER"
+        ;;
+    3)
+        read -p "Quel est le nom du groupe ? : " GROUP
+        create_group "$GROUP"
+        ;;
+    4)
+        read -p "Quel est le nom du l'utilisateur ? : " USER
+        add_user_to_group "$USER"
+        ;;
+    
+    *)
+        echo "Action inconnue"
+        ;;
+esac
