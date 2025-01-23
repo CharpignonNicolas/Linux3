@@ -3,7 +3,7 @@
 # Fonction qui permet de créer un utilisateur
 
 
-read -p "Quelle action effectuer ? (create_user = 1, delete_user = 2, create_group = 3, add_user_to_group = 4 ) : " action
+read -p "Quelle action effectuer ? (create_user = 1, delete_user = 2, create_group = 3, add_user_to_group = 4 , list all =5) : " action
 
 #generation d'un mdp akeatoire  pour l'utilisateur
 
@@ -132,26 +132,36 @@ add_user_to_group()
             done
 }
 
+list_all()
+{
+    echo "Liste des utilisateurs :"
+    getent passwd | awk -F: '$4 >= 1000 {print $1}'
+    echo "Liste des groupes :"
+    getent group | awk -F: '$4 >= 1000 {print $1}'
+}
+
 
 
 case $action in
     1)
-        read -p "Quel est le nom de l'utilisateur ? : " USER
+        read -p "Quel est le nom de l'utilisateur a ajouter? : " USER
         create_user "$USER"
         ;;
     2)
-        read -p "Quel est le nom de l'utilisateur ? : " USER
+        read -p "Quel est le nom de l'utilisateur a suprimer? : " USER
         delete_user "$USER"
         ;;
     3)
-        read -p "Quel est le nom du groupe ? : " GROUP
+        read -p "Quel est le nom du groupe à creer ? : " GROUP
         create_group "$GROUP"
         ;;
     4)
         read -p "Quel est le nom du l'utilisateur ? : " USER
         add_user_to_group "$USER"
         ;;
-    
+    5)
+        list_all
+        ;;
     *)
         echo "Action inconnue"
         ;;
