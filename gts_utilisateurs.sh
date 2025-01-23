@@ -114,22 +114,36 @@ create_group()
 }
 
 #ajout d'un utilisateur à un groupe
+
 add_user_to_group()
 {
+# Boucle pour vérifier si l'utilisateur existe et si son GID est supérieur ou égal à 1000
+    while true; do
+        read -p "Entrez le nom de l'utilisateur : " user
+        if id "$user" &>/dev/null; then
+            user_gid=$(id -g "$user")
+            if [ "$user_gid" -ge 1000 ]; then
+                echo "L'utilisateur $user existe et son GID est supérieur ou égal à 1000"
+                break
+            fi
+        fi
+        echo "L'utilisateur $user n'existe pas ou son GID est inférieur à 1000. Veuillez réessayer."
+    done
 
     # Lister les groupes existants
-            echo "Groupes existants :"
-            liste_groupes=$(cut -d: -f1 /etc/group | tr '\n' ' ')
-            echo "$liste_groupes"
-            
-            # Demander les groupes
-            read -p "Entrez les groupes séparés par un espace : " groupes
+    echo "Groupes existants :"
+    liste_groupes=$(getent group | awk -F: '$3 >= 1000 {print $1}')
+    echo "$liste_groupes"
 
-            # Ajouter l'utilisateur aux groupes avec gpasswd
-            for group in $groupes; do
-                sudo gpasswd -a "$1" "$group"
-                #echo "L'utilisateur $1 a été ajouté au groupe $group"
-            done
+    # Demander les groupes
+    read -p "Entrez les groupes séparés par un espace : " groupes
+
+    # Ajouter l'utilisateur aux groupes avec gpasswd
+    for group in $groupes; do
+        sudo gpasswd -a "$user" "$group"
+        echo "L'utilisateur $user a été ajouté au groupe $group"
+    done
+
 }
 
 list_all()
@@ -174,8 +188,7 @@ case $action in
         create_group "$GROUP"
         ;;
     4)
-        read -p "Quel est le nom du l'utilisateur ? : " USER
-        add_user_to_group "$USER"
+        add_user_to_group 
         ;;
     5)
         list_all
