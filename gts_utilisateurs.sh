@@ -134,10 +134,28 @@ add_user_to_group()
 
 list_all()
 {
-    echo "Liste des utilisateurs :"
-    getent passwd | awk -F: '$4 >= 1000 {print $1}'
-    echo "Liste des groupes :"
-    getent group | awk -F: '$4 >= 1000 {print $1}'
+    # Récupérer la liste des utilisateurs avec un GID supérieur ou égal à 1000
+    users=$(getent passwd | awk -F: '$4 >= 1000 {print $1}')
+
+    # Parcourir chaque utilisateur
+    for user in $users; do
+        # Récupérer les groupes de l'utilisateur
+        groups=$(id -nG $user)
+
+        # Vérifier si l'utilisateur est dans le groupe sudo
+        if [[ " $groups " == *" sudo "* ]]; then
+            sudo_status="Oui"
+        else
+            sudo_status="Non"
+        fi
+
+        # Afficher les informations formatées
+        echo "Utilisateur: $user"
+        echo "Groupes: $groups"
+        echo "Sudo: $sudo_status"
+        echo "---------------------"
+
+    done
 }
 
 
