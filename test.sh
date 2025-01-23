@@ -1,21 +1,24 @@
 #!/bin/bash
 
+USERNAME=$(whoami)
+ls -R /home/$USERNAME
+
 # Fonction pour sauvegarder un dossier sélectionné
 sauvegarde_manuelle() {
-    echo "Sélectionnez le dossier ou fichier à sauvegarder :"
-    read -p "Entrez le chemin du fichier/dossier à sauvegarder : " source
-    if [ -e "$source" ]; then
-        echo "Sélectionnez le dossier de destination pour la sauvegarde :"
-        read -p "Entrez le chemin du dossier de destination : " destination
-        if [ -d "$destination" ]; then
-            cp -r "$source" "$destination"
-            echo "Sauvegarde de '$source' vers '$destination' réussie."
-        else
-            echo "Le dossier de destination n'existe pas. Veuillez réessayer."
+	echo "Sélectionnez le dossier ou fichier à sauvegarder :"
+	read -p "Entrez le chemin du fichier/dossier à sauvegarder (sans le /home/username) : " source
+    	if [ -e "$source" ]; then
+		read -p "Entrez votre département : " departement
+		if [[ "$(groups | tr ' ' '\n' | grep -x "$departement")" ]]; then
+            		cp -r /home/$USERNAME/$source /ShareFolders/$departement
+            		echo "Sauvegarde de '$source' vers '/ShareFolders/$departement' réussie."
+		else
+			echo "Vous n'avez pas le droit sur ce groupe / Groupe inexistant"
+		fi
+	else
+		echo "Le fichier ou dossier source n'existe pas. Veuillez réessayer."
+
         fi
-    else
-        echo "Le fichier ou dossier source n'existe pas. Veuillez réessayer."
-    fi
 }
 
 # Fonction pour configurer une tâche cron pour sauvegarde automatique
@@ -25,18 +28,26 @@ configurer_cron() {
     read -p "Heure : " heure
     echo "Entrez la minute à laquelle vous souhaitez effectuer la sauvegarde (ex: 30 pour 30 minutes) :"
     read -p "Minute : " minute
-    echo "Entrez le chemin du dossier de sauvegarde automatique :"
-    read -p "Dossier de sauvegarde : " destination
-    
-    # Créer un script de sauvegarde qui sera appelé par cron
-    script_sauvegarde="/tmp/script_sauvegarde.sh"
-    echo "#!/bin/bash" > "$script_sauvegarde"
-    echo "cp -r /chemin/du/dossier/origine/* $destination" >> "$script_sauvegarde"
-    chmod +x "$script_sauvegarde"
-    
-    # Ajouter une tâche cron pour exécuter la sauvegarde à l'heure spécifiée
-    (crontab -l 2>/dev/null; echo "$minute $heure * * * $script_sauvegarde") | crontab -
-    echo "Tâche cron ajoutée pour sauvegarder tous les jours à $heure:$minute."
+
+# Demander le fichiers à sauvegarder
+	read -p "Selectionner le fichier /Dossier à mettre en sauvegarde automatique :" source_fichier
+	read -p "selectionner votre departement : " departement
+	emplacement="/home/$USERNAME/$source_fichier"
+	if [[ "$(groups | tr ' ' '\n' | grep -x "$departement")" ]]; then
+		echo "Dans le bon departement"
+        else
+                echo "Vous n'avez pas le droit sur ce groupe / Groupe inexistant"
+        fi
+
+	# Créer un script de sauvegarde qui sera appelé par cron
+	script_sauvegarde="/tmp/script_sauvegarde.sh"
+	echo "#!/bin/bash" > "$script_sauvegarde"
+	echo "cp -r $emplacement /ShareFolders/$departement" >> "$script_sauvegarde"
+	chmod +x "$script_sauvegarde"
+
+	# Ajouter une tâche cron pour exécuter la sauvegarde à l'heure spécifiée
+    	(crontab -l 2>/dev/null; echo "$minute $heure * * * $script_sauvegarde") | crontab -
+    	echo "Tâche cron ajoutée pour sauvegarder tous les jours à $heure:$minute."
 }
 
 # Menu principal
