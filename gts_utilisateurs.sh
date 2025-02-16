@@ -108,7 +108,7 @@ create_group()
         # On crée le dossier partagé du département 
         mkdir -p /ShareFolders/$1
         chown root:root /ShareFolders
-        chown $1:$1 /ShareFolders/$1
+        chown :$1 /ShareFolders/$1
 
     fi
 }
