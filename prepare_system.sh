@@ -23,6 +23,11 @@ update_system() {
     echo "Mise à jour du système en cours..."
     sudo apt update && sudo apt upgrade -y
     echo "Mise à jour terminée."
+
+    # Installation de rsyslog si nécessaire
+    echo "Installation de rsyslog..."
+    sudo apt install -y rsyslog
+    echo "rsyslog installé avec succès."
 }
 
 # 4. Vérifier l’état des services critiques
