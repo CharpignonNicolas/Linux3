@@ -132,7 +132,7 @@ add_user_to_group()
 
     # Lister les groupes existants
     echo "Groupes existants :"
-    liste_groupes=$(getent group | awk -F: '$3 >= 1000 {print $1}')
+liste_groupes=$(getent group | awk -F: '$3 >= 1000 && $3 < 60000 {print $1}')
     echo "$liste_groupes"
 
     # Demander les groupes
@@ -149,7 +149,7 @@ add_user_to_group()
 list_all()
 {
     # Récupérer la liste des utilisateurs avec un GID supérieur ou égal à 1000
-    users=$(getent passwd | awk -F: '$4 >= 1000 {print $1}')
+users=$(getent passwd | awk -F: '$3 >= 1000 && $3 < 60000 {print $1}')
 
     # Parcourir chaque utilisateur
     for user in $users; do
