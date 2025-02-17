@@ -1,16 +1,10 @@
 #!/bin/bash
 
-# Fonction qui permet de créer un utilisateur
-
-
 read -p "Quelle action effectuer ? (create_user = 1, delete_user = 2, create_group = 3, add_user_to_group = 4 , list all =5) : " action
 
-#generation d'un mdp akeatoire  pour l'utilisateur
-
+# Fonction qui permet de créer un utilisateur
 
 create_user() {
-
-    
 
     # Vérification si l'utilisateur existe déjà
     if id "$1" &>/dev/null; then
@@ -67,34 +61,47 @@ create_user() {
     fi
 }
 
+delete_user() {
+    read -p "Quel utilisateur voulez-vous supprimer ? : " username
 
-
-delete_user()
-
-{
-    read -p "Quel est le nom de l'utilisateur ? : " USER
-
-    #for group in $(groups $1 | cut -d: -f2); do
-    #   sudo gpasswd -d "$1" "$group"
-    #  echo "L'utilisateur $1 a été supprimé du groupe $group"
-    #done
-
-    echo "Suppression de l'utilisateur : $1" 
-    # On vérifie si l'utilisateur existe
-    if id "$1" &>/dev/null; then
-        # On supprime l'utilisateur
-        sudo userdel -r "$1"
-        echo "L'utilisateur $1 a été supprimé"
-    else
-        echo "L'utilisateur $1 n'existe pas"
+    # Vérifier si l'utilisateur existe
+    if ! id "$username" &>/dev/null; then
+        echo "L'utilisateur $username n'existe pas."
+        return 1
     fi
 
+    echo "Suppression de l'utilisateur : $username"
+
+    # Supprimer les quotas de l'utilisateur
+    echo "Suppression des quotas..."
+    setquota -u "$username" 0 0 0 0 /home 2>/dev/null
+
+    # Supprimer l'utilisateur de tous les groupes
+    echo "Suppression de l'utilisateur des groupes secondaires..."
+    user_groups=$(id -nG "$username" | tr ' ' '\n' | grep -v "^$username$")  
+    for group in $user_groups; do
+        sudo gpasswd -d "$username" "$group" 2>/dev/null
+    done
+
+    # Supprimer ses tâches cron s'il en a
+    echo "🗑 Suppression des tâches cron..."
+    crontab -r -u "$username" 2>/dev/null
+
+    # Supprimer l'utilisateur (sans supprimer ses fichiers)
+    echo "Suppression de l'utilisateur..."
+    userdel -f "$username"
+
+    # Supprimer son répertoire personnel
+    echo "Suppression du répertoire personnel de $username..."
+    rm -rf "/home/$username"
+
+    echo "L'utilisateur $username a été supprimé avec succès."
 }
+
 
 #creation d'un groupe
 create_group()
 {
-    
 
     echo "Création du groupe : $1"
     # On vérifie si le groupe existe
@@ -132,7 +139,7 @@ add_user_to_group()
 
     # Lister les groupes existants
     echo "Groupes existants :"
-liste_groupes=$(getent group | awk -F: '$3 >= 1000 && $3 < 60000 {print $1}')
+    liste_groupes=$(getent group | awk -F: '$3 >= 1000 && $3 < 60000 {print $1}')
     echo "$liste_groupes"
 
     # Demander les groupes
@@ -149,7 +156,7 @@ liste_groupes=$(getent group | awk -F: '$3 >= 1000 && $3 < 60000 {print $1}')
 list_all()
 {
     # Récupérer la liste des utilisateurs avec un GID supérieur ou égal à 1000
-users=$(getent passwd | awk -F: '$3 >= 1000 && $3 < 60000 {print $1}')
+    users=$(getent passwd | awk -F: '$3 >= 1000 && $3 < 60000 {print $1}')
 
     # Parcourir chaque utilisateur
     for user in $users; do
