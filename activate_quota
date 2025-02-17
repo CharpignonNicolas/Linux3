@@ -11,7 +11,8 @@ PARTITION=$(lsblk -r | grep "$REP_QUOTAS" | awk '{print $1}')
 
 NEW_PARTITION=$(fdisk -l | grep "$PARTITION" | awk '{print $1}')
 
-apt -y install quota quotatool
+apt -y install quota 
+#apt -y install quotatool
 
 #Enable Quota feature
 df -h REP_QUOTAS
