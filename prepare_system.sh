@@ -50,7 +50,7 @@ check_services() {
 configure_disk_quota() {
     echo "Configuration des quotas disque..."
     sudo apt install -y quota
-    sudo mount -o remount,usrquota,grpquota /
+    #sudo mount -o remount,usrquota,grpquota /
     sudo quotacheck -avugm
     sudo quotaon -avug
     echo "Quotas disque activés."
