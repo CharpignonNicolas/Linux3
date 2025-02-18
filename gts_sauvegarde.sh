@@ -17,7 +17,10 @@ manual_backup() {
 
     timestamp=$(date +"%Y%m%d_%H%M%S")
     backup_name="backup_$(basename "$folder")_$timestamp"
-    
+
+    # Créer le dossier de destination
+    mkdir -p "$BACKUP_DIR/$backup_name"
+
     echo "Sauvegarde en cours..."
     cp -r "$folder" "$BACKUP_DIR/$backup_name"
 
