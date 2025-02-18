@@ -1,17 +1,19 @@
 #!/bin/bash
 
-read -p "Quelle action effectuer ? (create_user = 1, delete_user = 2, create_group = 3, add_user_to_group = 4 , list all =5) : " action
 
 # Fonction qui permet de créer un utilisateur
 
 create_user() {
 
+    #Demander a l'utilisateur le nom de l'utilisateur
+    read -p "Quel est le nom de l'utilisateur à créer ? : " username
+
     # Vérification si l'utilisateur existe déjà
-    if id "$1" &>/dev/null; then
+    if id "$username" &>/dev/null; then
         echo "L'utilisateur $1 existe déjà"
     else
         # Création de l'utilisateur
-        sudo useradd -m -s /bin/bash "$1"
+        sudo useradd -m -s /bin/bash "$username"
         echo "L'utilisateur $1 a été créé"
 
         # Génération du mot de passe aléatoire
@@ -19,16 +21,16 @@ create_user() {
         echo "Mot de passe généré : $password"
 
         # Affectation du mot de passe à l'utilisateur
-        echo "$1:$password" | sudo chpasswd
+        echo "$username:$password" | sudo chpasswd
 
         # Forcer l'utilisateur à changer son mot de passe au prochain login
-        sudo passwd -e "$1"
+        sudo passwd -e "$username"
 
         echo "L'utilisateur $1 a maintenant un mot de passe aléatoire."
 
 
         # Demander à l'utilisateur quel quota en mégaoctets il souhaite définir
-        echo "Quel quota en mégaoctets voulez-vous attribuer à l'utilisateur $1 ?"
+        echo "Quel quota en mégaoctets voulez-vous attribuer à l'utilisateur $username ?"
         read quota_mb
 
         # Convertir le quota de Mo en Ko (1 Mo = 1024 Ko)
@@ -42,7 +44,7 @@ create_user() {
 
 
         # Affecter l'utilisateur à un ou plusieurs groupes
-        read -p "Souhaitez-vous affecter l'utilisateur $1 à un ou plusieurs groupes ? (y/n) : " response
+        read -p "Souhaitez-vous affecter l'utilisateur $username à un ou plusieurs groupes ? (y/n) : " response
         if [ "$response" == "y" ]; then
             # Lister les groupes existants
             echo "Groupes existants :"
@@ -54,7 +56,7 @@ create_user() {
 
             # Ajouter l'utilisateur aux groupes avec gpasswd
             for group in $groupes; do
-                sudo gpasswd -a "$1" "$group"
+                sudo gpasswd -a "$username" "$group"
                 #echo "L'utilisateur $1 a été ajouté au groupe $group"
             done
         fi
@@ -84,7 +86,7 @@ delete_user() {
     done
 
     # Supprimer ses tâches cron s'il en a
-    echo "🗑 Suppression des tâches cron..."
+    echo "Suppression des tâches cron..."
     crontab -r -u "$username" 2>/dev/null
 
     # Supprimer l'utilisateur (sans supprimer ses fichiers)
@@ -102,20 +104,22 @@ delete_user() {
 #creation d'un groupe
 create_group()
 {
+    #demander le nom du groupe
+    read -p "Entrez le nom du groupe à créer : " group_name
 
-    echo "Création du groupe : $1"
+    echo "Création du groupe : $group_name"
     # On vérifie si le groupe existe
-    if grep -q "^$1:" /etc/group; then
-        echo "Le groupe $1 existe déjà"
+    if grep -q "^$group_name:" /etc/group; then
+        echo "Le groupe $group_name existe déjà"
     else
         # On crée le groupe
-        sudo groupadd "$1"
-        echo "Le groupe $1 a été créé"
+        sudo groupadd "$group_name"
+        echo "Le groupe $group_name a été créé"
 
         # On crée le dossier partagé du département 
-        mkdir -p /ShareFolders/$1
+        mkdir -p /ShareFolders/$group_name
         chown root:root /ShareFolders
-        chown :$1 /ShareFolders/$1
+        chown :$1 /ShareFolders/$groupe_name
 
     fi
 }
@@ -181,26 +185,31 @@ list_all()
 
 
 
-case $action in
-    1)
-        read -p "Quel est le nom de l'utilisateur a ajouter? : " USER
-        create_user "$USER"
-        ;;
-    2)
-        read -p "Quel est le nom de l'utilisateur a suprimer? : " USER
-        delete_user "$USER"
-        ;;
-    3)
-        read -p "Quel est le nom du groupe à creer ? : " GROUP
-        create_group "$GROUP"
-        ;;
-    4)
-        add_user_to_group 
-        ;;
-    5)
-        list_all
-        ;;
-    *)
-        echo "Action inconnue"
-        ;;
-esac
+
+# Menu interactif
+while true; do
+    echo -e "========================================="
+    echo -e "          Menu Utilisateur               "
+    echo -e "========================================="
+    echo -e "1.Cree un utilisateur"
+    echo -e "2.Supprimer un utilisateur"
+    echo -e "3.Creer un groupe"
+    echo -e "4.Ajouter un utilisateur à un groupe"
+    echo -e "5.Lister tous les utilisateurs"
+    echo -e "6.Quitter"
+    echo -e "========================================="
+
+    read -p "Choisissez une option (1-6) : " choice
+
+    case $choice in
+        1) create_user ;;
+        2) delete_user ;;
+        3) create_group ;;
+        4) add_user_to_group ;;
+        5) list_all ;;
+        6) echo -e "Quitter..."; exit 0 ;;
+        *) echo -e "$Option invalide, veuillez réessayer." ;;
+    esac
+
+    read -p "Appuyez sur [Entrée] pour revenir au menu..."
+done
