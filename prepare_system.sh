@@ -33,13 +33,13 @@ update_system() {
 # 4. Vérifier l’état des services critiques
 check_services() {
     echo "Vérification des services critiques..."
-    services=("rsyslog" "cron" "ssh" "networking")
+    services=("rsyslog" "cron" "networking")
     
     for service in "${services[@]}"; do
         if systemctl is-active --quiet "$service"; then
-            echo "✅ Service $service est actif."
+            echo "Service $service est actif."
         else
-            echo "⚠️ Service $service est inactif, démarrage en cours..."
+            echo "Service $service est inactif, démarrage en cours..."
             sudo systemctl start "$service"
             sudo systemctl enable "$service"
         fi
