@@ -15,7 +15,7 @@ apt -y install quota
 #apt -y install quotatool
 
 #Enable Quota feature
-df -h REP_QUOTAS
+df -h $REP_QUOTAS
 
 echo $NEW_PARTITION
 # set quota feature and re-mount
