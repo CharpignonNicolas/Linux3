@@ -6,9 +6,6 @@ group=$(groups | awk '{print $4}')
 # Dossier où seront stockées les sauvegardes
 BACKUP_DIR="/Sharefolder/$group"
 
-# Vérifier si le dossier de sauvegarde existe, sinon le créer
-mkdir -p "$BACKUP_DIR"
-
 # Fonction pour effectuer une sauvegarde manuelle
 manual_backup() {
     read -p "Entrez le chemin du dossier à sauvegarder : " folder
