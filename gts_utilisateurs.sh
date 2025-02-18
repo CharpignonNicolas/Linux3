@@ -153,13 +153,11 @@ add_user_to_group()
     echo "$liste_groupes"
 
     # Demander les groupes
-    read -p "Entrez les groupes séparés par un espace : " groupes
+    read -p "Entrez les groupes séparés par un espace : " groupe
 
-    # Ajouter l'utilisateur aux groupes avec gpasswd
-    for group in $groupes; do
-        sudo gpasswd -a "$user" "$group"
-        echo "L'utilisateur $user a été ajouté au groupe $group"
-    done
+    # Ajouter l'utilisateur au groupe
+    usermod -aG groupe $user
+
 
 }
 
