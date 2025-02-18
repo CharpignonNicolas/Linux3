@@ -54,7 +54,7 @@ while true; do
         6) echo -e " Quitter..."
            exit 0
            ;;
-        *) echo -e "${RED}⛔ Option invalide, veuillez réessayer.${NC}"
+        *) echo -e "Option invalide, veuillez réessayer."
            ;;
     esac
 
