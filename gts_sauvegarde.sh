@@ -4,7 +4,7 @@
 group=$(groups | awk '{print $2}')
 
 # Dossier où seront stockées les sauvegardes
-BACKUP_DIR="/Sharefolder/$group"
+BACKUP_DIR="/ShareFolders/$group"
 
 # Fonction pour effectuer une sauvegarde manuelle
 manual_backup() {
