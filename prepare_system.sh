@@ -5,9 +5,13 @@ echo "=== Préparation du système Debian ==="
 # 1. Configuration du gestionnaire de démarrage GRUB
 configure_grub() {
     echo "Configuration de GRUB..."
+
+    #sed -i , remplace sans fichier temporaire
     sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=2/' /etc/default/grub
     sudo sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"/GRUB_CMDLINE_LINUX_DEFAULT="quiet"/' /etc/default/grub
+
     sudo update-grub
+
     echo "GRUB configuré avec succès (démarrage rapide activé)."
 }
 
@@ -50,9 +54,11 @@ check_services() {
 configure_disk_quota() {
     echo "Configuration des quotas disque..."
     sudo apt install -y quota
+
     #sudo mount -o remount,usrquota,grpquota /
     sudo quotacheck -avugm
     sudo quotaon -avug
+    
     echo "Quotas disque activés."
 }
 
@@ -63,4 +69,4 @@ update_system
 check_services
 configure_disk_quota
 
-echo "✅ Préparation du système terminée ! Redémarrage recommandé."
+echo "Préparation du système terminée ! Redémarrage recommandé."
