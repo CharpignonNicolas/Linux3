@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Groupe de l'utilisateur 
-group=$(groups | awk '{print $4}')
+group=$(groups | awk '{print $2}')
 
 # Dossier où seront stockées les sauvegardes
 BACKUP_DIR="/Sharefolder/$group"
