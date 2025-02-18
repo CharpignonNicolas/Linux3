@@ -1,7 +1,10 @@
 #!/bin/bash
 
+#Groupe de l'utilisateur 
+group=$(groups | awk '{print $4}')
+
 # Dossier où seront stockées les sauvegardes
-BACKUP_DIR="/var/backups/system_backups"
+BACKUP_DIR="/Sharefolder/$group"
 
 # Vérifier si le dossier de sauvegarde existe, sinon le créer
 mkdir -p "$BACKUP_DIR"
