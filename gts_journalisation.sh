@@ -1,26 +1,21 @@
 #!/bin/bash
 
-# Vérifier et installer rsyslog
-install_rsyslog() {
-    if dpkg -l | grep -q rsyslog; then
-        echo "rsyslog est déjà installé."
-    else
-        echo "Installation de rsyslog..."
-        sudo apt update && sudo apt install -y rsyslog
-        echo "rsyslog installé avec succès."
-    fi
-}
 
 # Configurer la journalisation centralisée
 configure_central_logging() {
     log_file="/var/log/syslog-central.log"
     
     if ! grep -q "$log_file" /etc/rsyslog.conf; then
+
         echo "Configuration de la journalisation centralisée..."
+    
         echo "*.*    $log_file" | sudo tee -a /etc/rsyslog.conf
+    
         echo "Journalisation centralisée activée dans $log_file."
     else
+    
         echo "La journalisation centralisée est déjà configurée."
+    
     fi
 }
 
@@ -72,24 +67,26 @@ check_logs() {
 
 # Menu interactif
 while true; do
-    echo "=== Menu de gestion de la journalisation ==="
-    echo "1. Vérifier et installer rsyslog"
-    echo "2. Configurer la journalisation centralisée"
-    echo "3. Configurer la rotation des journaux"
-    echo "4. Activer la journalisation avancée (SSH, Apache, MySQL)"
-    echo "5. Redémarrer rsyslog"
-    echo "6. Vérifier la configuration des journaux"
-    echo "7. Quitter"
-    read -p "Choisissez une option (1-7) : " choice
+    echo "==========================================================="
+    echo "            Menu de gestion de la journalisation           "
+    echo "==========================================================="
+    echo "1. Configurer la journalisation centralisée"
+    echo "2. Configurer la rotation des journaux"
+    echo "3. Activer la journalisation avancée (SSH, Apache, MySQL)"
+    echo "4. Redémarrer rsyslog"
+    echo "5. Vérifier la configuration des journaux"
+    echo "6. Quitter"
+    read -p "Choisissez une option (1-6) : " choice
 
     case $choice in
-        1) install_rsyslog ;;
-        2) configure_central_logging ;;
-        3) configure_log_rotation ;;
-        4) configure_advanced_logging ;;
-        5) restart_rsyslog ;;
-        6) check_logs ;;
-        7) echo "Au revoir !"; break ;;
+        1) configure_central_logging ;;
+        2) configure_log_rotation ;;
+        3) configure_advanced_logging ;;
+        4) restart_rsyslog ;;
+        5) check_logs ;;
+        6) echo "Au revoir !"; break ;;
         *) echo "Option invalide. Veuillez réessayer." ;;
     esac
+
+    read -p "Appuyez sur [Entrée] pour revenir au menu..."
 done
