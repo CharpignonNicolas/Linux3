@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Fonction pour afficher les tâches cron actuelles
+# Fonction pour afficher les tâches cron actuelles avec numéros de ligne
 list_cron_jobs() {
     if crontab -l &>/dev/null; then
         echo "Tâches cron actuelles :"
@@ -18,9 +18,9 @@ create_cron_job() {
     read -r schedule
 
     if crontab -l &>/dev/null; then
-        (crontab -l; echo "$schedule $command") | crontab -
+        (crontab -l; echo "$schedule $command") | crontab - 2>/dev/null  # Ajout sans afficher les messages de sauvegarde
     else
-        echo "$schedule $command" | crontab -
+        echo "$schedule $command" | crontab - 2>/dev/null  # Ajout sans afficher les messages de sauvegarde
     fi
 
     echo "Tâche cron créée avec succès."
@@ -38,24 +38,29 @@ delete_cron_job() {
         return
     fi
 
-    crontab -l | sed "${line_number}d" | crontab -
+    crontab -l | sed "${line_number}d" | crontab - 2>/dev/null  # Suppression sans afficher les messages de sauvegarde
     echo "Tâche cron supprimée avec succès."
 }
 
-# Menu interactif
+# Menu interactif de gestion des tâches cron
 while true; do
-    echo "Menu de gestion des tâches cron"
-    echo "1. Afficher les tâches cron actuelles"
-    echo "2. Créer une nouvelle tâche cron"
-    echo "3. Supprimer une tâche cron"
-    echo "4. Quitter"
+    echo -e "========================================="
+    echo -e "       Menu de gestion des tâches cron    "
+    echo -e "========================================="
+    echo -e "1. Afficher les tâches cron actuelles"
+    echo -e "2. Créer une nouvelle tâche cron"
+    echo -e "3. Supprimer une tâche cron"
+    echo -e "4. Quitter"
+    echo -e "========================================="
+
     read -p "Choisissez une option (1-4) : " choice
 
-    case $choice in
-        1) list_cron_jobs ;;
-        2) create_cron_job ;;
-        3) delete_cron_job ;;
-        4) echo "Au revoir !"; break ;;
-        *) echo "Option invalide. Veuillez réessayer." ;;
+  case $choice in
+        1) list_cron_jobs ;;  
+        2) create_cron_job ;; 
+        3) delete_cron_job ;;  
+        4) echo -e "Quitter..."; exit 0 ;;  
+        *) echo -e "Option invalide, veuillez réessayer." ;; 
     esac
-done
+
+    read -p "Appuyez sur [Entrée] pour revenir au menu..."  done
