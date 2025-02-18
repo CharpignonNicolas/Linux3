@@ -44,14 +44,14 @@ delete_cron_job() {
 
 # Menu interactif de gestion des tâches cron
 while true; do
-    echo -e "========================================="
-    echo -e "       Menu de gestion des tâches cron    "
-    echo -e "========================================="
-    echo -e "1. Afficher les tâches cron actuelles"
-    echo -e "2. Créer une nouvelle tâche cron"
-    echo -e "3. Supprimer une tâche cron"
-    echo -e "4. Quitter"
-    echo -e "========================================="
+    echo  "========================================="
+    echo  "       Menu de gestion des tâches cron    "
+    echo  "========================================="
+    echo  "1. Afficher les tâches cron actuelles"
+    echo  "2. Créer une nouvelle tâche cron"
+    echo  "3. Supprimer une tâche cron"
+    echo  "4. Quitter"
+    echo  "========================================="
 
     read -p "Choisissez une option (1-4) : " choice
 

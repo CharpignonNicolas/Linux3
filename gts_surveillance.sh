@@ -34,14 +34,14 @@ memory() {
 
 # Menu interactif
 while true; do
-    echo -e "========================================="
-    echo -e "         Menu de surveillance            "
-    echo -e "========================================="
-    echo -e "1. Surveillance de l'espace disque"
-    echo -e "2. Surveillance des processus actifs"
-    echo -e "3. Surveillance de l'utilisation de la mémoire"
-    echo -e "4. Quitter"
-    echo -e "========================================="
+    echo  "========================================="
+    echo  "         Menu de surveillance            "
+    echo  "========================================="
+    echo  "1. Surveillance de l'espace disque"
+    echo  "2. Surveillance des processus actifs"
+    echo  "3. Surveillance de l'utilisation de la mémoire"
+    echo  "4. Quitter"
+    echo  "========================================="
 
     read -p "Choisissez une option (1-4) : " action
 

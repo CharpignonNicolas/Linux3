@@ -194,16 +194,16 @@ list_all()
 
 # Menu interactif
 while true; do
-    echo -e "========================================="
-    echo -e "          Menu Utilisateur               "
-    echo -e "========================================="
-    echo -e "1.Cree un utilisateur"
-    echo -e "2.Supprimer un utilisateur"
-    echo -e "3.Creer un groupe"
-    echo -e "4.Ajouter un utilisateur à un groupe"
-    echo -e "5.Lister tous les utilisateurs"
-    echo -e "6.Quitter"
-    echo -e "========================================="
+    echo  "========================================="
+    echo  "          Menu Utilisateur               "
+    echo  "========================================="
+    echo  "1.Cree un utilisateur"
+    echo  "2.Supprimer un utilisateur"
+    echo  "3.Creer un groupe"
+    echo  "4.Ajouter un utilisateur à un groupe"
+    echo  "5.Lister tous les utilisateurs"
+    echo  "6.Quitter"
+    echo  "========================================="
 
     read -p "Choisissez une option (1-6) : " choice
 
@@ -213,8 +213,8 @@ while true; do
         3) create_group ;;
         4) add_user_to_group ;;
         5) list_all ;;
-        6) echo -e "Quitter..."; exit 0 ;;
-        *) echo -e "$Option invalide, veuillez réessayer." ;;
+        6) echo  "Quitter..."; exit 0 ;;
+        *) echo  "$Option invalide, veuillez réessayer." ;;
     esac
 
     read -p "Appuyez sur [Entrée] pour revenir au menu..."
