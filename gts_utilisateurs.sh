@@ -24,7 +24,7 @@ create_user() {
         echo "$username:$password" | sudo chpasswd
 
         # Forcer l'utilisateur à changer son mot de passe au prochain login
-        sudo passwd -e "$username"
+        sudo passwd -e --quiet "$username"
 
         echo "L'utilisateur $1 a maintenant un mot de passe aléatoire."
 
@@ -48,7 +48,7 @@ create_user() {
         if [ "$response" == "y" ]; then
             # Lister les groupes existants
             echo "Groupes existants :"
-            liste_groupes=$(cut -d: -f1 /etc/group | tr '\n' ' ')
+            liste_groupes=$(getent group | awk -F: '$3 >= 1000 && $3 < 60000 {print $1}' | grep -vxF -f <(getent passwd | awk -F: '$3 >= 1000 {print $1}'))
             echo "$liste_groupes"
             
             # Demander les groupes
@@ -64,6 +64,12 @@ create_user() {
 }
 
 delete_user() {
+    #lister tt les users
+    echo "Liste des utilisateurs :";
+    liste_users=$(getent passwd | awk -F: '$3 >= 1000 && $3 < 60000 {print $1}')
+    echo "$liste_users"
+
+    # Demander le nom de l'utilisateur à supprimer
     read -p "Quel utilisateur voulez-vous supprimer ? : " username
 
     # Vérifier si l'utilisateur existe
