@@ -44,22 +44,18 @@ create_user() {
 
 
         # Affecter l'utilisateur à un ou plusieurs groupes
-        read -p "Souhaitez-vous affecter l'utilisateur $username à un ou plusieurs groupes ? (y/n) : " response
-        if [ "$response" == "y" ]; then
             # Lister les groupes existants
             echo "Groupes existants :"
             liste_groupes=$(getent group | awk -F: '$3 >= 1000 && $3 < 60000 {print $1}' | grep -vxF -f <(getent passwd | awk -F: '$3 >= 1000 {print $1}'))
             echo "$liste_groupes"
             
-            # Demander les groupes
-            read -p "Entrez les groupes séparés par un espace : " groupes
+            # Demander le groupe
+            read -p "Entrez le groupes dans le quel vous voulez afecter $username : " groupe
 
-            # Ajouter l'utilisateur aux groupes avec gpasswd
-            for group in $groupes; do
-                sudo gpasswd -a "$username" "$group"
-                #echo "L'utilisateur $1 a été ajouté au groupe $group"
-            done
-        fi
+            # Ajouter l'utilisateur au groupe
+            usermod -aG $groupe $username
+
+            echo "L'utilisateur $username a été ajouté au groupe $groupe."
     fi
 }
 
@@ -134,29 +130,33 @@ create_group()
 
 add_user_to_group()
 {
-# Boucle pour vérifier si l'utilisateur existe et si son GID est supérieur ou égal à 1000
+# Boucle pour vérifier si l'utilisateur existe et si son GID est supérieur ou égal à 1000 et lister les user avant de demander le nom de l'utilisateur
+    
     while true; do
-        read -p "Entrez le nom de l'utilisateur : " user
+        echo "Liste des utilisateurs :";
+        liste_users=$(getent passwd | awk -F: '$3 >= 1000 && $3 < 60000 {print $1}')
+        echo "$liste_users"
+        read -p "Quel utilisateur voulez-vous ajouter à un groupe ? : " user
+
         if id "$user" &>/dev/null; then
-            user_gid=$(id -g "$user")
-            if [ "$user_gid" -ge 1000 ]; then
-                echo "L'utilisateur $user existe et son GID est supérieur ou égal à 1000"
-                break
-            fi
+            break
+        else
+            echo "L'utilisateur $user n'existe pas."
         fi
-        echo "L'utilisateur $user n'existe pas ou son GID est inférieur à 1000. Veuillez réessayer."
     done
 
     # Lister les groupes existants
     echo "Groupes existants :"
-    liste_groupes=$(getent group | awk -F: '$3 >= 1000 && $3 < 60000 {print $1}')
+    liste_groupes=$(getent group | awk -F: '$3 >= 1000 && $3 < 60000 {print $1}' | grep -vxF -f <(getent passwd | awk -F: '$3 >= 1000 {print $1}'))
     echo "$liste_groupes"
 
     # Demander les groupes
-    read -p "Entrez les groupes séparés par un espace : " groupe
+    read -p "Entrez le groupe  : " groupe
 
     # Ajouter l'utilisateur au groupe
-    usermod -aG groupe $user
+    usermod -aG $groupe $user
+
+    echo "L'utilisateur $user a été ajouté au groupe $groupe."
 
 
 }
@@ -168,20 +168,12 @@ list_all()
 
     # Parcourir chaque utilisateur
     for user in $users; do
-        # Récupérer les groupes de l'utilisateur
-        groups=$(id -nG $user)
-
-        # Vérifier si l'utilisateur est dans le groupe sudo
-        if [[ " $groups " == *" sudo "* ]]; then
-            sudo_status="Oui"
-        else
-            sudo_status="Non"
-        fi
+        # Récupérer les groupes de l'utilisateur sauf le group user en question
+        groups=$(id -nG "$user" | tr ' ' '\n' | grep -v "^$user$")
 
         # Afficher les informations formatées
         echo "Utilisateur: $user"
-        echo "Groupes: $groups"
-        echo "Sudo: $sudo_status"
+        echo "Groupe: $groups"
         echo "---------------------"
 
     done
