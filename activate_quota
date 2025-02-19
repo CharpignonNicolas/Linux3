@@ -20,7 +20,7 @@ df -h $REP_QUOTAS
 echo $NEW_PARTITION
 # set quota feature and re-mount
 
-umount REP_QUOTAS
+umount $REP_QUOTAS
 tune2fs -O quota $NEW_PARTITION
 mount $NEW_PARTITION $REP_QUOTAS
 tune2fs -l $NEW_PARTITION | grep -i quota
