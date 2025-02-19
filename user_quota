@@ -2,12 +2,6 @@
 
 # Script pour configurer les quotas pour un utilisateur spécifique
 
-# Vérification que le script est exécuté en tant que root
-if [[ $EUID -ne 0 ]]; then
-    echo "Ce script doit être exécuté en tant que root."
-    exit 1
-fi
-
 # Demander le nom de l'utilisateur
 echo -n "Entrez le nom de l'utilisateur : "
 read USERNAME
@@ -29,7 +23,7 @@ read HARD_LIMIT
 QUOTA_DIR="/home"
 
 # Vérification que les quotas sont activés sur le système
-df -hT $QUOTA_DIR | grep -i "usrquota" &>/dev/null
+mount | grep /home | grep usrquota &>/dev/null
 if [[ $? -ne 0 ]]; then
     echo "Les quotas ne semblent pas activés sur $QUOTA_DIR. Activez-les avant d'exécuter ce script."
     exit 1
