@@ -70,7 +70,7 @@ while true; do
     echo "4. Quitter"
     echo "========================================="
 
-    read -p "Choisissez une option (1-5) : " choice
+    read -p "Choisissez une option (1-4) : " choice
 
     case $choice in
         1) manual_backup ;;
