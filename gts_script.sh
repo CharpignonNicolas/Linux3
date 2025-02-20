@@ -43,7 +43,7 @@ while true; do
     case $choice in
         1) execute_script "/usr/local/bin/gts_utilisateurs.sh"
            ;;
-        2) execute_script "/usr/local/bingts_cron.sh"
+        2) execute_script "/usr/local/bin/gts_cron.sh"
            ;;
         3) execute_script "/usr/local/bin/gts_surveillance.sh"
            ;;
