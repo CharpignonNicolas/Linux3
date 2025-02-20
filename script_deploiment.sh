@@ -23,6 +23,7 @@ scripts="gts_utilisateurs.sh RH
 gts_cron.sh ALL
 gts_sauvegarde.sh ALL
 gts_journalisation.sh IT
+activate.quota ALL
 gts_surveillance.sh IT"
 
 # Déplacer et configurer les permissions des scripts
