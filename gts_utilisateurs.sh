@@ -22,20 +22,6 @@ create_user() {
 
         echo "L'utilisateur $username a maintenant un mot de passe aléatoire."
 
-
-        # Demander à l'utilisateur quel quota en mégaoctets il souhaite définir
-        echo "Quel quota en mégaoctets voulez-vous attribuer à l'utilisateur $username ?"
-        read quota_mb
-
-        quota_ko=$((quota_mb * 1024))
-
-        # Appliquer le quota à l'utilisateur sur la partition /home
-        sudo setquota -u $username $quota_ko 0 0 0 /home
-
-        # Afficher un message de confirmation
-        echo "Le quota de $quota_mb Mo a été défini pour l'utilisateur $1 sur la partition /home."
-
-
         # Demander à l'utilisateur quel quota en mégaoctets il souhaite définir
         read -p "Quel quota en mégaoctets voulez-vous attribuer à l'utilisateur $username ? " quota_mb
 
