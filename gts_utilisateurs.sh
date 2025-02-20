@@ -151,9 +151,9 @@ list_all()
 
     for user in $users; do
         
-         # Récupérer les groupes de l'utilisateur dont le GID est entre 1000 et 60000
-        groups=$(id -nG "$user" | tr ' ' '\n' | xargs -I{} getent group {} | awk -F: '$3 >= 1000 && $3 < 60000 {print $1}' | tr '\n' ' ')
-        
+         # Récupérer les groupes de l'utilisateur dont le GID est entre 1000 et 60000 et different de son groups user
+        groups=$(id -nG "$user" | tr ' ' '\n' | grep -v "^$user$" | xargs -I{} getent group {} | awk -F: '$3 >= 1000 && $3 < 60000 {print $1}' | tr '\n' ' ')
+
         echo "Utilisateur: $user"
         echo "Groupe: $groups"
         echo "---------------------"
