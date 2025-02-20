@@ -63,4 +63,6 @@ while true; do
         *) echo -e "Option invalide, veuillez réessayer." ;; 
     esac
 
-    read -p "Appuyez sur [Entrée] pour revenir au menu..."  done
+    read -p "Appuyez sur [Entrée] pour revenir au menu..."
+done
+
