@@ -37,7 +37,7 @@ update_system() {
 # 4. Vérifier l’état des services critiques
 check_services() {
     echo "Vérification des services critiques..."
-    services=("rsyslog" "cron" "networking")
+    services=("rsyslog" "cron" "networking" "quota")
     
     for service in "${services[@]}"; do
         if systemctl is-active --quiet "$service"; then
