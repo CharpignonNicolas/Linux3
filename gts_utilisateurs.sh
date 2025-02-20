@@ -138,6 +138,24 @@ add_user_to_group()
 
     echo "L'utilisateur $user a été ajouté au groupe $groupe."
 }
+configure_sudo() {
+    read -p "Entrez le nom de l'utilisateur : " username
+
+    # Vérifie si l'utilisateur existe
+    if ! id "$username" &>/dev/null; then
+        echo "L'utilisateur $username n'existe pas."
+        return 1
+    fi
+
+    read -p "Entrez le nom du service à autoriser (ex: ssh) : " service
+
+    # Ajoute la règle sudo dans /etc/sudoers.d/
+    sudoers_file="/etc/sudoers.d/$username-$service"
+    echo "$username ALL=(ALL) NOPASSWD: /bin/systemctl restart $service" | sudo tee "$sudoers_file" > /dev/null
+
+    echo "L'utilisateur $username peut maintenant redémarrer $service avec :"
+    echo "sudo systemctl restart $service"
+}
 
 #liste de tous les utilisateurs
 
@@ -158,23 +176,21 @@ list_all()
     done
 }
 
-
-
-
 # Menu interactif
 while true; do
     echo  "========================================="
     echo  "          Menu Utilisateur               "
     echo  "========================================="
-    echo  "1.Cree un utilisateur"
-    echo  "2.Supprimer un utilisateur"
-    echo  "3.Creer un groupe"
-    echo  "4.Ajouter un utilisateur à un groupe"
-    echo  "5.Lister tous les utilisateurs"
-    echo  "6.Quitter"
+    echo  "1. Créer un utilisateur"
+    echo  "2. Supprimer un utilisateur"
+    echo  "3. Créer un groupe"
+    echo  "4. Ajouter un utilisateur à un groupe"
+    echo  "5. Lister tous les utilisateurs"
+    echo  "6. Configurer sudo pour redémarrer un service"
+    echo  "7. Quitter"
     echo  "========================================="
 
-    read -p "Choisissez une option (1-6) : " choice
+    read -p "Choisissez une option (1-7) : " choice
 
     case $choice in
         1) create_user ;;
@@ -182,8 +198,9 @@ while true; do
         3) create_group ;;
         4) add_user_to_group ;;
         5) list_all ;;
-        6) echo  "Quitter..."; exit 0 ;;
-        *) echo  "$Option invalide, veuillez réessayer." ;;
+        6) configure_sudo ;;
+        7) echo "Quitter..."; exit 0 ;;
+        *) echo "Option invalide, veuillez réessayer." ;;
     esac
 
     read -p "Appuyez sur [Entrée] pour revenir au menu..."
