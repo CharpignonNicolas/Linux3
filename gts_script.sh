@@ -4,7 +4,7 @@
 # Exécuter la préparation du système au démarrage, sans affichage dans le menu
 if [ ! -f "/tmp/system_prepared" ]; then
     echo -e "Préparation initiale du système en cours..."
-    chmod +x ./prepare_system.sh && ./prepare_system.sh
+    chmod +x prepare_system.sh && prepare_system.sh
     touch /tmp/system_prepared  # Marqueur pour éviter l'exécution multiple
     echo -e "Système préparé avec succès."
     sleep 2  # Petite pause avant d'afficher le menu
