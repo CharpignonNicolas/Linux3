@@ -47,7 +47,8 @@ done <<< "$scripts"
 
 # Ajouter les groupes RH et IT à sudoers pour leurs scripts
 sudo bash -c 'echo "%RH ALL=(ALL) NOPASSWD: /usr/local/bin/gts_utilisateurs.sh" >> /etc/sudoers'
-sudo bash -c 'echo "%IT ALL=(ALL) NOPASSWD: /usr/local/bin/gts_journalisation.sh, /usr/local/bin/gts_surveillance.sh" >> /etc/sudoers'
+sudo bash -c 'echo "%IT ALL=(ALL) NOPASSWD: /usr/local/bin/gts_journalisation.sh" >> /etc/sudoers'
+sudo bash -c 'echo "%IT ALL=(ALL) NOPASSWD: /usr/local/bin/gts_surveillance.sh" >> /etc/sudoers'
 
 echo "Installation terminée. gts_script.sh est prêt à être utilisé."
 echo "Le groupe RH peut gérer les utilisateurs via sudo."

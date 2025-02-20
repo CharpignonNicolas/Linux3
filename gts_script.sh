@@ -13,7 +13,6 @@ fi
 # Vérifier si un script existe avant de l'exécuter
 execute_script() {
     if [ -f "$1" ]; then
-        chmod +x "$1"
         bash "$1"
     else
         echo " Erreur : Le script $1 est introuvable."
