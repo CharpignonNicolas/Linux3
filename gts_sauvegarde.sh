@@ -8,21 +8,24 @@ BACKUP_DIR="/ShareFolders/$group"
 
 # Fonction pour effectuer une sauvegarde manuelle
 manual_backup() {
-    read -p "Entrez le chemin du dossier à sauvegarder : " folder
+    read -p "Entrez le chemin du fichier ou dossier à sauvegarder : " file_or_folder
 
-    if [ ! -d "$folder" ]; then
-        echo "Erreur : Le dossier n'existe pas."
+    # Vérifier si le chemin existe
+    if [ ! -e "$file_or_folder" ]; then  # -e vérifie l'existence (fichier ou dossier)
+        echo "Erreur : Le fichier ou dossier n'existe pas."
         return
     fi
 
     timestamp=$(date +"%Y%m%d_%H%M%S")
-    backup_name="backup_$(basename "$folder")_$timestamp"
+    backup_name="backup_$(basename "$file_or_folder")_$timestamp"
 
     # Créer le dossier de destination
     mkdir -p "$BACKUP_DIR/$backup_name"
 
     echo "Sauvegarde en cours..."
-    cp -r "$folder" "$BACKUP_DIR/$backup_name"
+
+    # Utiliser cp pour les fichiers et dossiers
+    cp -r "$file_or_folder" "$BACKUP_DIR/$backup_name"
 
     echo "Sauvegarde terminée : $BACKUP_DIR/$backup_name"
 }
