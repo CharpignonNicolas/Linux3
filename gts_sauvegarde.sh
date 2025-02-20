@@ -34,14 +34,14 @@ manual_backup() {
 schedule_backup() {
     read -p "Entrez le chemin du dossier à sauvegarder automatiquement : " folder
 
-    if [ ! -d "$folder" ]; then
-        echo "Erreur : Le dossier n'existe pas."
+    if [ ! -e "$file_or_folder" ]; then
+        echo "Erreur : Le dossier ou le fichier n'existe pas."
         return
     fi
 
     read -p "À quelle fréquence voulez-vous sauvegarder ? (ex: '0 2 * * *' pour 2h du matin chaque jour) : " cron_schedule
 
-    cron_command="$cron_schedule cp -r $folder $BACKUP_DIR/backup_$(basename "$folder")_$(date +\%Y\%m\%d_\%H\%M\%S)"
+    cron_command="$cron_schedule cp -r $file_or_folder $BACKUP_DIR/backup_$(basename "$file_or_folder")_$(date +\%Y\%m\%d_\%H\%M\%S)"
 
     # Ajouter la tâche au crontab
     if crontab -l &>/dev/null; then
