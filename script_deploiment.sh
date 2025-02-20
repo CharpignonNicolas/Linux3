@@ -13,6 +13,16 @@ fi
 sudo groupadd -f IT
 sudo groupadd -f RH
 
+mkdir -p /ShareFolders/IT
+chown root:root /ShareFolders
+chown :IT /ShareFolders/IT
+
+
+mkdir -p /ShareFolders/RH
+chown root:root /ShareFolders
+chown :RH /ShareFolders/RH
+
+    
 # Déplacer gts_script.sh (exécutable par tout le monde)
 sudo mv "$chemin/gts_script.sh" "/usr/local/bin/gts_script.sh"
 sudo chmod 755 "/usr/local/bin/gts_script.sh"

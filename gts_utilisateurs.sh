@@ -105,7 +105,7 @@ create_group()
         
         mkdir -p /ShareFolders/$group_name
         chown root:root /ShareFolders
-        chown :$1 /ShareFolders/$groupe_name
+        chown :$group_name /ShareFolders/$groupe_name
 
     fi
 }
