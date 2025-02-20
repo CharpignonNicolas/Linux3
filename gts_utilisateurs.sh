@@ -7,11 +7,11 @@ create_user() {
     read -p "Quel est le nom de l'utilisateur à créer ? : " username
 
     if id "$username" &>/dev/null; then
-        echo "L'utilisateur $1 existe déjà"
+        echo "L'utilisateur $username existe déjà"
     else
 
         sudo useradd -m -s /bin/bash "$username"
-        echo "L'utilisateur $1 a été créé"
+        echo "L'utilisateur $username a été créé"
 
         password=$(openssl rand -base64 6)
         echo "Mot de passe généré : $password"
@@ -30,10 +30,27 @@ create_user() {
         quota_ko=$((quota_mb * 1024))
 
         # Appliquer le quota à l'utilisateur sur la partition /home
-        sudo setquota -u $1 $quota_ko 0 0 0 /home
+        sudo setquota -u $username $quota_ko 0 0 0 /home
 
         # Afficher un message de confirmation
         echo "Le quota de $quota_mb Mo a été défini pour l'utilisateur $1 sur la partition /home."
+
+
+        # Demander à l'utilisateur quel quota en mégaoctets il souhaite définir
+        read -p "Quel quota en mégaoctets voulez-vous attribuer à l'utilisateur $username ? " quota_mb
+
+        # Convertir le quota de Mo en Ko (1 Mo = 1024 Ko)
+        quota_ko=$((quota_mb * 1024))
+	        echo "$username"
+
+        # Appliquer le quota à l'utilisateur sur la partition /home
+	    echo "setquota -u $username $quota_ko $quota_ko 0 0 /home"
+        setquota -u $username $quota_ko $quota_ko 0 0 /home
+
+        # Afficher un message de confirmation
+        echo "Le quota de $quota_mb Mo a été défini pour l'utilisateur $username sur la partition /home."
+
+
 
 
         # Affecter l'utilisateur à un groupe
