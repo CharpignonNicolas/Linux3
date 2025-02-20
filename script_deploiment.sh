@@ -24,7 +24,8 @@ gts_cron.sh ALL
 gts_sauvegarde.sh ALL
 gts_journalisation.sh IT
 activate.quota ALL
-gts_surveillance.sh IT"
+gts_surveillance.sh IT
+prepare_system.sh ALL"
 
 # Déplacer et configurer les permissions des scripts
 while read -r script group; do
