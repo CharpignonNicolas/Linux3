@@ -41,15 +41,15 @@ while true; do
     read -p "Choisissez une option (1-6) : " choice
 
     case $choice in
-        1) execute_script "./gts_utilisateurs.sh"
+        1) execute_script "gts_utilisateurs.sh"
            ;;
-        2) execute_script "./gts_cron.sh"
+        2) execute_script "gts_cron.sh"
            ;;
-        3) execute_script "./gts_surveillance.sh"
+        3) execute_script "gts_surveillance.sh"
            ;;
-        4) execute_script "./gts_sauvegarde.sh"
+        4) execute_script "gts_sauvegarde.sh"
            ;;
-        5) execute_script "./gts_journalisation.sh"
+        5) execute_script "gts_journalisation.sh"
            ;;
         6) echo -e " Quitter..."
            exit 0
